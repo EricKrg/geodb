@@ -1,0 +1,22 @@
+51	Stadt Erfurt	243	1116	22.38
+52	Stadt Gera	79	512	17.13
+53	Stadt Jena	131	376	51.02
+54	Stadt Suhl	123	410	18.81
+55	Stadt Weimar	74	88	65.22
+61	Eichsfeld	437	1476	7.48
+62	Nordhausen	182	344	20.04
+63	Wartburgkreis	804	1523	17.48
+64	Unstrut-Hainich-Kreis	342	771	14.63
+65	Kyffhäuserkreis	316	803	9.76
+66	Schmalkalden-Meiningen	608	1292	13.26
+67	Gotha	1068	2363	14.25
+68	Sömmerda	362	892	12.30
+69	Hildburghausen	245	728	9.74
+70	Ilm-Kreis	448	765	16.98
+71	Weimarer Land	452	828	20.98
+72	Sonneberg	258	516	12.00
+73	Saalfeld-Rudolstadt	459	1046	17.27
+74	Saale-Holzland-Kreis	594	1490	20.63
+75	Saale-Orla-Kreis	380	728	15.61
+76	Greiz	450	898	18.21
+77	Altenburger Land	326	747	18.05
