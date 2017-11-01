@@ -30,14 +30,41 @@ relevant <- cbind(relevant, "mon" = substr(relevant$datum, 5,6))
 relevant <- cbind(relevant, "day" = substr(relevant$datum, 7,8))
 
 
-#wochen_werte <- function(){
+wochen_werte <- function(df){
+  n = as.numeric(levels(df$day))[1]
+  df_list = list()
+  stations <- df %>%
+    select(stations_id) %>%
+    distinct
 
-
-n = 11
-for (j in 1:7){
-  assign(paste0("day", n), subset(relevant, relevant$day == n))
-  n = n + 1
+  for (i in 1: NROW(stations)){
+    df_list[[i]] <- assign(paste0("stat",stations$stations_id[i]),
+           subset(df, df$stations_id == stations$stations_id[i]))
+  }
+  df_list2 <- list()
+  x = 1
+  for (j in df_list){
+    temp <- j %>%
+      select(durchfluss)%>%
+      sum/NROW(j)
+    temp2 <- j %>%
+      select(wasserstand) %>%
+      sum/NROW(j)
+    print(paste0("Wochendurchfluss: ", temp))
+    print(paste0("Wochenwasserstand: ", temp2))
+    df_list2[[x]] <- assign(paste0("woche", j$stations_id[1]),
+                  data.frame(durchfluss = temp, wasserstand = temp2,
+                             datum =as.character(paste0(j$datum[1],"_",j$datum[NROW(j)])),
+                                                        station = j$stations_id[1]))
+    x = x + 1
+  }
+  return(df_list2)
 }
+#funktioniert so nur mit dieser Art von Tabellen "voll generisch und so"
+
+test<-wochen_werte(relevant)
+unlist(test)
 
 
-relevant$day[n]
+
+
