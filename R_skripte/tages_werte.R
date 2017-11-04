@@ -20,7 +20,7 @@ con <- dbConnect(drv, dbname = "Messdaten",
 rm(pw) # removes the password
 
 qry <- {"select * from pegel_messdaten inner join messdaten on pegel_messdaten.did = messdaten.did"
-  }
+  } #Pegelmessdaten query
 
 relevant <- dbGetQuery(con, qry)
 relevant[,4] <- NULL
@@ -28,8 +28,8 @@ relevant[,4] <- NULL
 
 relevant <- cbind(relevant, "mon" = substr(relevant$datum, 5,6))
 relevant <- cbind(relevant, "day" = substr(relevant$datum, 7,8))
-
-
+relevant
+##alt----
 
 wochen_werte <- function(df){
   n = as.numeric(levels(df$day))[1]
@@ -72,12 +72,13 @@ value_list <- wochen_werte(relevant)
 for (i in seq(value_list))
   assign(paste("df",value_list[[i]]$station, sep = ""), value_list[[i]])
 
+###neu----
 
-
-
+##loop for daily values
 stations <- relevant %>%
   select(stations_id) %>%
   distinct
+
 
 df_list <- list()
 for (i in 1: NROW(stations)){   #break down to stations
@@ -88,23 +89,68 @@ for (i in 1: NROW(stations)){   #break down to stations
 days <- relevant %>%
   select(day) %>%
   distinct
-for (q in days$day){
-
+day_list <- list()
+i = 1
+for (q in days$day){   #daily values
   print(q)
-  day_list <- list()
-  i = 1
-  if (df_list[[1]]$day == q){  #break down to days
-    temp <- subset(df_list[[1]], df_list[[1]]$day == q)
-    durchfl <- sum(temp$durchfluss)/NROW(temp)
-    wassers <- sum(temp$durchfluss)/NROW(temp)
-    station <- df_list[[1]]$stations_id[1]
-    day_list[[i]] <- assign(paste0("day",temp$day),
-                       tibble(durchfluss = durchfl, wasserstand = wassers,
-                              tag = q , station = station))
-  }
+  for (j in 1:length(df_list) ){
+  print(j)
+  temp <- df_list[[j]][which(df_list[[j]]$day == q),,drop=F] #break down to days
+  durchfl <- sum(temp$durchfluss)/NROW(temp)
+  wassers <- sum(temp$wasserstand)/NROW(temp)
+  station <- temp$stations_id[1]
+  mon <- temp$mon[1]
+  day_list[[i]] <- assign(paste0("day",temp$day),
+                          tibble(durchfluss = durchfl, wasserstand = wassers,
+                          tag = q,mon = mon , station = station))
   i = i + 1
+  }
 }
-unlist(day_list)
+
+day_df <- rbind_list(day_list)
+day_df
+
+stations <- as.data.frame(day_df$station)
+stations <- stations[!duplicated(stations[,1]),]
+
+week_list = list()
+n = 1
+start = 0
+
+duration = seq(day_df$tag[1], max(day_df$tag), by = 7)
+for (a in duration){  # weekly iteration
+  #print(a)
+  start =a
+  print(start)#first day of the week
+  for (k in stations){
+    print(k)
+    week_list[[n]]<- day_df %>%
+      filter(station == k) %>%
+      filter(tag >= start) %>%
+      filter(tag <= start + 6) # filter one week
+    print("woche:")
+    print(length(week_list))
+    n = n + 1
+    print(n)
+    if (length(week_list) == NROW(stations)){  # if all stations been con. to a week per station
+      print("next week")
+      break
+    }
+  }
+}
+
+for(e in week_list){  # values per week + writing to db
+  print(e)
+  durchfluss <- sum(e$durchfluss)/NROW(e)
+  wasserstand <- sum(e$wasserstand)/NROW(e)
+  datum <- paste0(e$tag[1], "_", e$tag[NROW(e)], e$mon[1])
+  station <- e$station[1]
+  dbWriteTable(con, paste0(e$station[1],"_", datum),
+               tibble(durchfluss, wasserstand, datum, station))
+}
 
 
-apply()
+
+#assign(paste0(e$station[1],"_", datum),
+#       tibble(durchfluss, wasserstand, datum, station))
+
