@@ -1,4 +1,9 @@
-### geodb connection with r
+#script for the computation of the weekly values of "pegel-messdaten"
+#database connection with r
+#
+#database access:
+#
+#
 
 require("RPostgreSQL")
 
@@ -14,7 +19,7 @@ pw <- {
 drv <- dbDriver("PostgreSQL")
 # creates a connection to the postgres database
 # note that "con" will be used later in each connection to the database
-con <- dbConnect(drv, dbname = "Messdaten",
+con <- dbConnect(drv, dbname = "Messdaten",        #change con to elephantsql database
                  host = "localhost", port = 5432,
                  user = "postgres", password = pw)
 rm(pw) # removes the password
@@ -24,7 +29,6 @@ qry <- {"select * from pegel_messdaten inner join messdaten on pegel_messdaten.d
 
 relevant <- dbGetQuery(con, qry)
 relevant[,4] <- NULL
-
 
 relevant <- cbind(relevant, "mon" = substr(relevant$datum, 5,6))
 relevant <- cbind(relevant, "day" = substr(relevant$datum, 7,8))
@@ -77,8 +81,7 @@ for (i in seq(value_list))
 ##loop for daily values
 stations <- relevant %>%
   select(stations_id) %>%
-  distinct
-
+  distinct  # df of stations, for later iteration
 
 df_list <- list()
 for (i in 1: NROW(stations)){   #break down to stations
@@ -88,15 +91,16 @@ for (i in 1: NROW(stations)){   #break down to stations
 
 days <- relevant %>%
   select(day) %>%
-  distinct
+  distinct # df of days, for later iteration
 day_list <- list()
+
 i = 1
-for (q in days$day){   #daily values
-  print(q)
+for (q in days$day){   #iteration of daily values
+  print(q) #for day q
   for (j in 1:length(df_list) ){
-  print(j)
-  temp <- df_list[[j]][which(df_list[[j]]$day == q),,drop=F] #break down to days
-  durchfl <- sum(temp$durchfluss)/NROW(temp)
+  print(j)  #for station j
+  temp <- df_list[[j]][which(df_list[[j]]$day == q),,drop=F] # all values form station j on day q
+  durchfl <- sum(temp$durchfluss)/NROW(temp)  # mean daily values
   wassers <- sum(temp$wasserstand)/NROW(temp)
   station <- temp$stations_id[1]
   mon <- temp$mon[1]
@@ -108,7 +112,7 @@ for (q in days$day){   #daily values
 }
 
 day_df <- rbind_list(day_list)
-day_df
+day_df   #df of all daily-values for all stations
 
 stations <- as.data.frame(day_df$station)
 stations <- stations[!duplicated(stations[,1]),]
@@ -117,9 +121,8 @@ week_list = list()
 n = 1
 start = 0
 
-duration = seq(day_df$tag[1], max(day_df$tag), by = 7)
+duration = seq(day_df$tag[1], max(day_df$tag), by = 7) # one week duration (not yet working for monthly change)
 for (a in duration){  # weekly iteration
-  #print(a)
   start =a
   print(start)#first day of the week
   for (k in stations){
@@ -145,12 +148,8 @@ for(e in week_list){  # values per week + writing to db
   wasserstand <- sum(e$wasserstand)/NROW(e)
   datum <- paste0(e$tag[1], "_", e$tag[NROW(e)], e$mon[1])
   station <- e$station[1]
-  dbWriteTable(con, paste0(e$station[1],"_", datum),
+  dbWriteTable(con, paste0(e$station[1],"_", datum),      # maybe conditon to avoid double write
                tibble(durchfluss, wasserstand, datum, station))
 }
 
-
-
-#assign(paste0(e$station[1],"_", datum),
-#       tibble(durchfluss, wasserstand, datum, station))
 
