@@ -33,49 +33,6 @@ relevant[,4] <- NULL
 relevant <- cbind(relevant, "mon" = substr(relevant$datum, 5,6))
 relevant <- cbind(relevant, "day" = substr(relevant$datum, 7,8))
 
-##alt----
-
-wochen_werte <- function(df){
-  n = as.numeric(levels(df$day))[1]
-  df_list = list()
-  stations <- df %>%
-    select(stations_id) %>%
-    distinct
-
-  for (i in 1: NROW(stations)){   #break down to stations
-    df_list[[i]] <- assign(paste0("stat",stations$stations_id[i]),
-           subset(df, df$stations_id == stations$stations_id[i]))
-  }
-
-  df_list2 <- list()
-  x = 1
-  for (j in df_list){
-    temp <- j %>%
-      select(durchfluss)%>%
-      sum/NROW(j)
-    temp2 <- j %>%
-      select(wasserstand) %>%
-      sum/NROW(j)
-    date <- as.character(paste0(j$datum[1],"_",j$datum[NROW(j)]))
-    print(paste0("Wochendurchfluss: ", temp))
-    print(paste0("Wochenwasserstand: ", temp2))
-    print(date)
-    df_list2[[x]] <- assign(paste0("woche", j$stations_id[1]),
-                  tibble(durchfluss = temp, wasserstand = temp2,
-                             datum = as.character(date),
-                             station =j$stations_id[1]))
-    x = x + 1
-  }
-  return (df_list2)
-
-}
-#funktioniert so nur mit dieser Art von Tabellen "voll generisch und so"
-
-value_list <- wochen_werte(relevant)
-
-for (i in seq(value_list))
-  assign(paste("df",value_list[[i]]$station, sep = ""), value_list[[i]])
-
 ###neu----
 
 ##loop for daily values
@@ -107,7 +64,7 @@ for (q in days$day){   #iteration of daily values
   year <- substr(temp$datum[1],1,4 )
   day_list[[i]] <- assign(paste0("day",temp$day),
                           tibble(durchfluss = durchfl, wasserstand = wassers,
-                          tag = q,mon = mon , station = station, year = year))
+                          tag =as.numeric(q),mon = mon , station = station, year = year))
   i = i + 1
   }
 }
@@ -151,9 +108,13 @@ for(e in week_list){  # values per week + writing to db
   datum <- paste0(e$tag[1], "_", e$tag[NROW(e)], e$mon[1])
   station <- e$station[1]
   year <- e$year[1]
+  full_week <- FALSE
+  if (e$tag[1] - e$tag[NROW(e)] == -6 ){
+    full_week <- TRUE
+  }
   final_values[[q]] <- assign(paste0(e$station[1],"_", datum, "_", year),      # maybe conditon to avoid double write
-               tibble(durchfluss, wasserstand, start = substr(datum,1,2),
-                      end = substr(datum,4,5 ),monat = substr(datum,6,7), station, year))
+               tibble(station, durchfluss, wasserstand, start = substr(datum,1,2),
+                      end = substr(datum,4,5 ),monat = substr(datum,6,7), full_week, year))
   q = q + 1
   }
 
