@@ -74,4 +74,4 @@ for (i in klimate_stations){ #month
     }
   }
 
-dbWriteTable(con, "Jahreswerte_Klima", rbind_list(year_list))
+dbWriteTable(con, "jahreswerte_klima", rbind_list(year_list))

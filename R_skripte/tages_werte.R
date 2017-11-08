@@ -157,5 +157,5 @@ for(e in week_list){  # values per week + writing to db
   q = q + 1
   }
 
-dbWriteTable(con, "Wochenwerte_pegel", rbind_list(final_values))
+dbWriteTable(con, "wochenwerte_pegel", rbind_list(final_values))
 
