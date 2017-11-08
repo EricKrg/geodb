@@ -149,8 +149,8 @@ for(e in week_list){  # values per week + writing to db
   wasserstand <- sum(e$wasserstand)/NROW(e)
   datum <- paste0(e$tag[1], "_", e$tag[NROW(e)], e$mon[1])
   station <- e$station[1]
-  dbWriteTable(con, paste0(e$station[1],"_", datum, "Y", e$year ),      # maybe conditon to avoid double write
-               tibble(durchfluss, wasserstand, datum, station))
+  year <- e$year[1]
+  dbWriteTable(con, paste0(e$station[1],"_", datum, "_", year),      # maybe conditon to avoid double write
+               tibble(durchfluss, wasserstand, datum, station, year))
 }
-
 
