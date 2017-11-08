@@ -32,7 +32,7 @@ relevant[,4] <- NULL
 
 relevant <- cbind(relevant, "mon" = substr(relevant$datum, 5,6))
 relevant <- cbind(relevant, "day" = substr(relevant$datum, 7,8))
-relevant
+
 ##alt----
 
 wochen_werte <- function(df){
@@ -104,9 +104,10 @@ for (q in days$day){   #iteration of daily values
   wassers <- sum(temp$wasserstand)/NROW(temp)
   station <- temp$stations_id[1]
   mon <- temp$mon[1]
+  year <- substr(temp$datum[1],1,4 )
   day_list[[i]] <- assign(paste0("day",temp$day),
                           tibble(durchfluss = durchfl, wasserstand = wassers,
-                          tag = q,mon = mon , station = station))
+                          tag = q,mon = mon , station = station, year = year))
   i = i + 1
   }
 }
@@ -148,7 +149,7 @@ for(e in week_list){  # values per week + writing to db
   wasserstand <- sum(e$wasserstand)/NROW(e)
   datum <- paste0(e$tag[1], "_", e$tag[NROW(e)], e$mon[1])
   station <- e$station[1]
-  dbWriteTable(con, paste0(e$station[1],"_", datum),      # maybe conditon to avoid double write
+  dbWriteTable(con, paste0(e$station[1],"_", datum, "Y", e$year ),      # maybe conditon to avoid double write
                tibble(durchfluss, wasserstand, datum, station))
 }
 
