@@ -43,7 +43,8 @@ mon_duration <- mon_duration[!duplicated(mon_duration[,1]),]
 klimate_stations <- as.data.frame(relevant$stations_id)
 klimate_stations <- klimate_stations[!duplicated(klimate_stations[,1]),]
 
-
+year_list <- list()
+q <- 1
 for (i in klimate_stations){ #month
   print(i)
   df_list = list()
@@ -59,14 +60,17 @@ for (i in klimate_stations){ #month
         rsk <- sum(temp2$rsk)/NROW(temp2)
         fx <- sum(temp2$fx)/NROW(temp2)
         station <- temp2$stations_id[1]
-        date <- paste0(substr(temp2[1,]$datum,1,4),
+        date <- paste0(substr(temp2[1,]$datum,3,4),"/",
+                       substr(temp2[NROW(temp2),]$datum,3,4),
                        "_",temp2$mon[1],
                        "_",temp2$mon[NROW(temp2)])
-        assign(paste0("klima", i),
+        year_list[[q]] <- assign(paste0("klima", i),
                tibble(fm,rsk,fx,station,date))
+        q = q +1
         print("full year")
         break
       }
     }
   }
 
+dbWriteTable(con, "Jahreswerte_Klima", rbind_list(year_list))
