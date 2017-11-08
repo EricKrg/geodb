@@ -131,7 +131,7 @@ for (a in duration){  # weekly iteration
     week_list[[n]]<- day_df %>%
       filter(station == k) %>%
       filter(tag >= start) %>%
-      filter(tag <= start + 6) # filter one week
+      filter(tag <= start + 6) # filter one week, still includes shorter periodes then one week
     print("woche:")
     print(length(week_list))
     n = n + 1
@@ -142,7 +142,8 @@ for (a in duration){  # weekly iteration
     }
   }
 }
-
+final_values = list()
+q = 1
 for(e in week_list){  # values per week + writing to db
   print(e)
   durchfluss <- sum(e$durchfluss)/NROW(e)
@@ -150,7 +151,11 @@ for(e in week_list){  # values per week + writing to db
   datum <- paste0(e$tag[1], "_", e$tag[NROW(e)], e$mon[1])
   station <- e$station[1]
   year <- e$year[1]
-  dbWriteTable(con, paste0(e$station[1],"_", datum, "_", year),      # maybe conditon to avoid double write
-               tibble(durchfluss, wasserstand, datum, station, year))
-}
+  final_values[[q]] <- assign(paste0(e$station[1],"_", datum, "_", year),      # maybe conditon to avoid double write
+               tibble(durchfluss, wasserstand, start = substr(datum,1,2),
+                      end = substr(datum,4,5 ),monat = substr(datum,6,7), station, year))
+  q = q + 1
+  }
+
+dbWriteTable(con, "Wochenwerte_pegel", rbind_list(final_values))
 
