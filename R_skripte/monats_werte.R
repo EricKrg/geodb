@@ -59,13 +59,14 @@ for (i in klimate_stations){ #month
         fm <- sum(temp2$fm)/NROW(temp2)
         rsk <- sum(temp2$rsk)/NROW(temp2)
         fx <- sum(temp2$fx)/NROW(temp2)
+        sdk <- sum(temp2$sdk)/NROW(temp2)
         station <- temp2$stations_id[1]
         date <- paste0(substr(temp2[1,]$datum,3,4),"/",
                        substr(temp2[NROW(temp2),]$datum,3,4),
                        "_",temp2$mon[1],
                        "_",temp2$mon[NROW(temp2)])
         year_list[[q]] <- assign(paste0("klima", i),
-               tibble(fm,rsk,fx,station,date))
+               tibble(fm,rsk,fx,sdk,station,date))
         q = q +1
         print("full year")
         break
