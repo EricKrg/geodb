@@ -4,17 +4,17 @@
 library(dplyr)
 
 ## Data
-setwd("C:/Users/Eric/Desktop/geodb/Pegel_daten/")
 
+setwd("C:/Users/Eric/Documents/geodb/Pegel_daten")
 
 #dir_tb <- "57521.0_Wasserstand_Wipperdorf.txt"
 #dir_tb2 <-"57521.0_Durchfluss_Wipperdorf.txt"
 
-dir_tb <- "57027.0_Wasserstand_Rudolstadt.txt"
-dir_tb2 <- "57027.0_Durchfluss_Rudolstadt.txt"
+#dir_tb <- "57027.0_Wasserstand_Rudolstadt.txt"
+#dir_tb2 <- "57027.0_Durchfluss_Rudolstadt.txt"
 
-#dir_tb <- "42012.0_Wasserstand_Vacha.txt"
-#dir_tb2 <- "42012.0_Durchfluss_Vacha.txt"
+dir_tb <- "42012.0_Wasserstand_Vacha.txt"
+dir_tb2 <- "42012.0_Durchfluss_Vacha.txt"
 
 
 #####
@@ -46,11 +46,8 @@ Mess_df[2] <- NULL
 
 
 # Pegel export
-Mess_df_grob <- Mess_df %>%
-  select(DID,Datum,AID,Stations_id)
+Mess_df_all <- Mess_df %>%
+  select(DID,Stations_id,Datum, AID, Wasserstand,Durchfluss)
 
-write.table(Mess_df_grob, file = paste0(substr(dir_tb,21,nchar(dir_tb)-4),"_pegel.txt"),append = FALSE, sep = ";",
-            row.names = FALSE, col.names = FALSE, quote = F)
-
-write.table(Mess_df, file = paste0(substr(dir_tb,21,nchar(dir_tb)-4),"_all_pegel.txt"),append = FALSE, sep = ";",
+write.table(Mess_df_all, file = paste0(substr(dir_tb,21,nchar(dir_tb)-4),"_pegel.txt"),append = FALSE, sep = ";",
             row.names = FALSE, col.names = FALSE, quote = F)
