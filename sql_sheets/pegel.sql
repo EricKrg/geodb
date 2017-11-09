@@ -1,9 +1,7 @@
-﻿/*
+﻿--#####
+--Pegel messdaten
 drop table if exists pegel_messdaten;
-
 delete from messdaten where aid = 2;
-
---same for pegel data 
 
 drop table if exists temp_wipperdorf;
 drop table if exists temp_vacha;
@@ -31,9 +29,9 @@ drop table if exists temp_rudolstadt;
 
 drop table if exists pegel_messdaten;
 
-create table pegel_messdaten (did bigint,durchfluss float, wasserstand float) INHERITS(messdaten);
+create table pegel_messdaten (did bigint Primary key references messdaten(DID),durchfluss float, wasserstand float);
 
-*/
+
 -- adding pegel data
 create table temp_wipperdorf (datum text, wasserstand float, durchfluss float, stations_id text, aid int, DID bigint);
 create table temp_vacha (datum text, wasserstand float, durchfluss float, stations_id text, aid int, DID bigint);
