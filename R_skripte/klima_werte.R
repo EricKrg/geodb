@@ -4,7 +4,7 @@
 library(dplyr)
 
 ## Data
-setwd("C:/Users/Eric/Desktop/geodb/klima_daten")
+setwd("C:/Users/Eric/Documents/geodb/klima_daten")
 dir_tb <- "brocken_raw.txt" # brocken  obvious name is obvious
 #dir_tb <-"fehmarn_raw.txt" #fehmarn
 #dir_tb <- "Zugspitze_raw.txt" #zugspitze
@@ -27,8 +27,10 @@ Mess_df_all <- Mess_df %>%
 
 ## data writing
 
-write.csv2(Mess_grob, file = paste0(dir_tb,"_klima.csv"), sep = ';')
-write.csv2(Mess_df_all, file = paste0(dir_tb,"_klima_all.csv"), sep = ";", row.names = FALSE, col.names = FALSE)
+#write.csv2(Mess_grob, file = paste0(dir_tb,"_klima.csv"), sep = ';')
+write.table(Mess_grob, file = paste0(substr(dir_tb,1, nchar(dir_tb)-4),"_klima.txt"),
+            sep = ";", row.names = FALSE, col.names = FALSE)
 
-write.table(Mess_df_all, file = paste0(dir_tb,"_klima_all.txt"),append = FALSE, sep = ";",
+write.table(Mess_df_all, file = paste0(paste0(substr(dir_tb,1, nchar(dir_tb)-4),"_klima_all.txt")),
+            append = FALSE, sep = ";",
             row.names = FALSE, col.names = FALSE, quote = F)
