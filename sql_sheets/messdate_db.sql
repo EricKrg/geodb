@@ -6,7 +6,7 @@
 --set client_encoding to 'UTF-8'; 
 --#########
 
-/* --create needed tables
+ --create needed tables
 drop table stationen cascade;
 
 create table stationen (STATIONS_ID char(30), 
@@ -42,7 +42,7 @@ Insert into messdaten (DID, Datum, AID, Stations_ID)  select DID, mess_datum, ar
 drop table temp_brocken;
 drop table temp_fehmarn;
 drop table temp_zugspitze; 
-*/
+
 --same for pegel data 
 drop table if exists 
 drop table if exists temp_wipperdorf;
@@ -139,7 +139,7 @@ copy meta_klima from;
 -- spatial table stationen - 
 
 -- data from pegel.csv and transforming crs
-/*
+
 drop table pegel_temp; 
 create table pegel_temp (ID char(30), rw float, hw float, hoehe float, art char(20), name text);
 copy pegel_temp from 'C:/Users/Eric/Desktop/geodb/Pegel.csv';
@@ -147,6 +147,7 @@ copy pegel_temp from 'C:/Users/Eric/Desktop/geodb/Pegel.csv';
 -- geom. and geom_transform to wgs
 SELECT AddGeometryColumn('pegel_temp','geomgg',31468,'POINT',3); --srid 31468, punkt 3 dimensional
 Update pegel_temp set geomgg= GeomFromEWKT ('SRID=31468;POINT('||rw||' '||hw||' '||hoehe||')'); -- set geom to srid to gg
+
 SELECT AddGeometryColumn('pegel_temp','geomwgs',4326,'POINT',3);
 Alter Table pegel_temp alter column geomwgs Type geometry(PointZ,4326) using ST_Transform(geomgg,4326); -- transform to wgs
 
@@ -159,17 +160,21 @@ Alter table pegel_temp add AID int default(2); -- Art id mit default hinzufügen
 --#########
 --create geom for stationen and combine pegel station/ klima station 
 
-/*
-drop view stationen_view;
+
 Alter table stationen drop geom;
 
+create table stationen (STATIONS_ID char(30), 
+	stationsname text, 
+	stationshoehe_metern integer,  
+	AID integer, 
+	lat float, lon float);
+
 Select AddGeometryColumn('stationen','geom',4326,'POINT',3);
-update stationen set geom= GeomFromEWKT ('SRID=4326;POINT('||lon||' '||lat||' '||STATIONSHOEHE_METERN||')'); -- set geom to srid wgs
+update stationen set geom= GeomFromEWKT ('SRID=4326;POINT('||lon||' '||lat||' '||STATIONSHOEHE_METERN||')');
 Alter table stationen drop lat;
 Alter table stationen drop lon;
 
---Insert into stationen (stations_id, stationsname, STATIONSHOEHE_METERN, aid, geom)  select id, name, hoehe, aid, geomwgs from pegel_temp;
-*/
+Insert into stationen (stations_id, stationsname, STATIONSHOEHE_METERN, aid, geom)  select id, name, hoehe, aid, geomwgs from pegel_temp;
 
 --#####
 -- add meta data for klima/pegel stations
