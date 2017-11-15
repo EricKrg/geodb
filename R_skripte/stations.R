@@ -4,8 +4,8 @@
 library(dplyr)
 
 ## Data
-dir_tb <- "C:/Users/Eric/Desktop/geodb/all_station_raw.CSV"
-
+dir_tb <- "C:/Users/Eric/Documents/geodb/data/all_station_raw.CSV"
+setwd("C:/Users/Eric/Documents/geodb/data/")
 klima_station <- read.csv2(dir_tb, header = TRUE, sep = ";")
 
 ## cons
@@ -36,5 +36,9 @@ klima_station[6] <- NULL
 klima_station[5] <- NULL
 klima_station[1] <- NULL
 ## write
-write.csv2(klima_station, file = "all_station.csv", sep = ';' )
-                      
+write.table(klima_station, file = "all_station.txt",
+            sep = ';',
+            quote = F,
+            row.names = F,
+            col.names = F)
+

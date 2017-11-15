@@ -10,11 +10,11 @@ setwd("C:/Users/Eric/Documents/geodb/Pegel_daten")
 #dir_tb <- "57521.0_Wasserstand_Wipperdorf.txt"
 #dir_tb2 <-"57521.0_Durchfluss_Wipperdorf.txt"
 
-#dir_tb <- "57027.0_Wasserstand_Rudolstadt.txt"
-#dir_tb2 <- "57027.0_Durchfluss_Rudolstadt.txt"
+dir_tb <- "57027.0_Wasserstand_Rudolstadt.txt"
+dir_tb2 <- "57027.0_Durchfluss_Rudolstadt.txt"
 
-dir_tb <- "42012.0_Wasserstand_Vacha.txt"
-dir_tb2 <- "42012.0_Durchfluss_Vacha.txt"
+#dir_tb <- "42012.0_Wasserstand_Vacha.txt"
+#dir_tb2 <- "42012.0_Durchfluss_Vacha.txt"
 
 
 #####
