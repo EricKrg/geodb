@@ -1,4 +1,5 @@
-﻿--#####
+﻿
+--#####
 --messdaten
 drop table if exists messdaten cascade;
 
@@ -23,6 +24,9 @@ copy temp_fehmarn from 'C:/Users/Eric/Documents/geodb/klima_daten/fehmarn_raw_kl
 copy temp_zugspitze from 'C:/Users/Eric/Documents/geodb/klima_daten/Zugspitze_raw_klima.txt' Delimiter ';';
 
 create table klima_messdaten (QN float, FM float, RSK float, FX float, SDK float) inherits(messdaten);
+
+
+
 alter table klima_messdaten add primary key(did);
 
 Insert into klima_messdaten  select did, stations_id, mess_datum , aid , qn , fm , rsk , fx , sdk  from temp_fehmarn;
@@ -34,13 +38,6 @@ drop table temp_brocken;
 drop table temp_zugspitze; 
 
 
---##########
---meta data for klima
-/*
-create table meta_klima ();
-
-copy meta_klima from;
-*/
 
 --#####
 --Pegel messdaten
@@ -71,7 +68,32 @@ drop table if exists temp_wipperdorf;
 drop table if exists temp_vacha;
 drop table if exists temp_rudolstadt;
 
-/*
+
+alter table klima_messdaten add constraint stations_id foreign key (stations_id)
+	references stationen
+	on delete cascade;
+
+alter table klima_messdaten add constraint aid foreign key (aid)
+	references art
+	on delete cascade;
+
+alter table pegel_messdaten add constraint aid foreign key (aid)
+	references art
+	on delete cascade;
+	
+alter table pegel_messdaten add constraint stations_id foreign key (stations_id)
+	references stationen
+	on delete cascade;
+
+alter table messdaten add constraint aid foreign key (aid)
+	references art
+	on delete cascade;
+
+alter table messdaten add constraint stations_id foreign key (stations_id)
+	references stationen
+	on delete cascade;
+
+
 --##########
 -- meta data for pegel 
 drop table meta_pegel;
@@ -79,4 +101,11 @@ drop table meta_pegel;
 create table meta_pegel (stations_id text, name text, gw_name text,einzugsgebiet_sqkm float, lage_ob_muendung float, pegel_nn text, hhq text, nnq text);
 copy meta_pegel from 'C:/Users/Eric/Desktop/geodb/meta_pegel.txt' (FORMAT CSV, Delimiter(E'\t'));
 
-*/
+
+--##########
+--meta data for klima
+
+create table meta_klima ();
+
+copy meta_klima from;
+

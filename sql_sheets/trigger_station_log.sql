@@ -5,7 +5,7 @@ Create table station_log(
 operation char(1) NOT NULL,
 stamp timestamp NOT NULL,
 userid text,
-stations_id text, 
+stations_id float, 
 stationsname text,
 stationshoehe_metern float,
 aid int);
@@ -13,8 +13,14 @@ aid int);
 
 Select AddGeometryColumn('station_log','geom',4326,'POINT',3);
 
+alter table station_log add constraint aid foreign key (aid)
+	references art
+	on delete cascade;
 
-
+alter table station_log add constraint stations_id foreign key (stations_id)
+	references stationen
+	on delete cascade;
+	
 create or replace function change_log_stations() RETURNS trigger as $station_log$
  BEGIN
 	IF (TG_OP = 'DELETE') THEN
