@@ -1,4 +1,8 @@
-﻿
+﻿/*
+
+--Sheet for all Stations, Station personal,Adresses & Einrichtungen
+
+
 drop table if exists stationen cascade;
 
 create table stationen (stations_id float, 
@@ -55,9 +59,56 @@ alter table stationen add constraint aid foreign key (aid)
 	references art
 	on delete cascade;
 
+*/
+--######
+--Adressen für Einrichtung und Personal
+
+drop table if exists adressen cascade;
+
+create table adressen ( adress_id serial primary key,
+	PLZ int,
+	Stadt text, 
+	Strasse text, 
+	Strassen_nr int);
+
+--######
+-- Stations_personal
+drop table if exists stations_personal ;
+
+create table stations_personal( personal_id serial primary key,
+	aid int,
+	adress_id int, 
+	email text,
+	tel int,
+	name text);
+	
+
+alter table stations_personal add constraint aid foreign key (aid)
+	references art
+	on delete cascade;
 
 
+alter table stations_personal add constraint adress_id foreign key (adress_id)
+	references adressen
+	on delete cascade;
+
+--
+drop table if exists einrichtung ;
+
+create table einrichtung( einrichtungs_id serial primary key,
+	aid int,
+	adress_id int,
+	einrichtung text,
+	email text,
+	web text,
+	tel integer);
+
+alter table einrichtung add constraint aid foreign key (aid)
+	references art
+	on delete cascade;
 
 
-
+alter table einrichtung add constraint adress_id foreign key (adress_id)
+	references adressen
+	on delete cascade;
 
