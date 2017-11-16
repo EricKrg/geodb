@@ -1,6 +1,6 @@
 ﻿
 --#####
---messdaten
+--messdaten Pegel,Klima + Meta Pege, Klima
 drop table if exists messdaten cascade;
 
 create table messdaten (DID bigint Primary key, stations_id float, mess_datum bigint, aid integer);
@@ -68,6 +68,8 @@ drop table if exists temp_wipperdorf;
 drop table if exists temp_vacha;
 drop table if exists temp_rudolstadt;
 
+--######
+-- Adding all needed constraints
 
 alter table klima_messdaten add constraint stations_id foreign key (stations_id)
 	references stationen
@@ -96,16 +98,36 @@ alter table messdaten add constraint stations_id foreign key (stations_id)
 
 --##########
 -- meta data for pegel 
-drop table meta_pegel;
+drop table if exists meta_pegel;
 
-create table meta_pegel (stations_id text, name text, gw_name text,einzugsgebiet_sqkm float, lage_ob_muendung float, pegel_nn text, hhq text, nnq text);
+create table meta_pegel (stations_id int primary key,
+	name text,
+	personal_id int,
+	gw_name text,
+	einzugsgebiet_sqkm float, 
+	lage_ob_muendung float,
+	pegel_nn text,
+	hhq text, 
+	nnq text);
+	
 copy meta_pegel from 'C:/Users/Eric/Desktop/geodb/meta_pegel.txt' (FORMAT CSV, Delimiter(E'\t'));
 
 
+alter table meta_pegel add constraint personal_id foreign key (personal_id)
+	references stations_personal
+	on delete cascade;
+
 --##########
 --meta data for klima
+drop table if exists meta_klima;
 
-create table meta_klima ();
+create table meta_klima (stations_id int primary key,
+	personal_id int,
+	aufnahme_gerät text,
+	in_betrieb_seit date, 
+	einzugsgebiet text);
 
-copy meta_klima from;
+alter table meta_klima add constraint personal_id foreign key (personal_id)
+	references stations_personal
+	on delete cascade;
 
